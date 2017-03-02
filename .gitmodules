@@ -1,0 +1,3 @@
+[submodule "networking-common"]
+	path = lib
+	url = ssh://candersonmiller@git.party.horse:29418/candersonmiller/networking-common.git
