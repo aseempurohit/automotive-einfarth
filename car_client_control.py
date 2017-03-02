@@ -3,7 +3,7 @@ import socket
 from lib.SimpleBroadcast import SimpleBroadcast
 
 class CarBroadcast(SimpleBroadcast):
-    def __init__(self,host2='localhost', port2=50024):
+    def __init__(self,host2='localhost', port2=5002):
         super(CarBroadcast, self).__init__(host1=host2, port1=port2)
         
 
