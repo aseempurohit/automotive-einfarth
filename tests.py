@@ -28,6 +28,11 @@ def broadcast():
     This gets messy for unit tests, but the same basic mechanism is used here - the
     difference being that within the unit tests, a function has been written to get one
     value and then stop the subscription so that the code can continue.
+
+    There is a broadcast client, and there is a consumer client.
+    The broadcast client sends an integer.
+    The consumer client, if connected, recieves any integer sent by any
+    broadcast client.  This also works in the case of multiple consumers.
 """
     
 class TestTraditionalNetwork(unittest.TestCase):
@@ -84,6 +89,9 @@ class TestTraditionalNetwork(unittest.TestCase):
         for i in range(10):
             self.assertEqual(caughtDigits[i],broadcasted[i])
             
+"""
+    This is a stub for the ENS functions
+"""
             
 class TestENSNetwork(unittest.TestCase):
 
