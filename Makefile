@@ -18,3 +18,6 @@ run: stop
 stop:
 	docker stop $(tag) || echo "$(tag) not running"
 	docker rm $(tag) || echo "$(tag) container not found"
+
+test:
+	python tests.py
