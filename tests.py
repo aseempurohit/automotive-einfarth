@@ -1,7 +1,7 @@
 
 import unittest
-from car_client_base import CarClient
-from car_client_control import CarBroadcast
+from CarClient import CarClient
+from CarBroadcast import CarBroadcast
 import random
 import threading
 from time import sleep
