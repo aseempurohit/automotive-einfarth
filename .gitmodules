@@ -1,3 +1,3 @@
 [submodule "lib"]
 	path = lib
-	url = ssh://candersonmiller@git.party.horse:29418/candersonmiller/networking-common.git
+	url = https://anderson.miller%40frogdesign.com@xdvcus.frogdesign.com/scm/dte/networking-common.git
