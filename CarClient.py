@@ -8,5 +8,5 @@ class CarClient(SimpleClient):
         super(CarClient, self).__init__(host2, port2)
 
 if __name__ == "__main__":
-    sc = CarClient(host2='slow.secret.equipment',port2=5002)
+    sc = CarClient(host2=socket.gethostname(),port2=5002)
     sc.subscribe()
