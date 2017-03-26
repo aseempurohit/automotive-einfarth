@@ -5,6 +5,7 @@ import socket
 from lib.SimpleServer import SimpleServer
 from lib.BroadcastRecipient import BroadcastRecipient
 
+from carcalc import getCarSpeed, getMinDist
 
 class CarRecipient(BroadcastRecipient):
     def __init__(self, socket2, address2):
@@ -13,14 +14,22 @@ class CarRecipient(BroadcastRecipient):
 
     def publish(self, instruction):
         try:
-            # cast instruction to a number
-            # do math here
-            # turn it back into a string
-            # make it bytes before you send it
-            # with variable.encode()
-            self.s.send(instruction)
+            temp = instruction.split('/')
+            if(len(temp) == 2):
+                try:
+                    mouse = temp[0]
+                    kph = getCarSpeed(mouse) 
+                    dist = getMinDist(mouse) 
+                    edge = temp[1]
+                    instruction = mouse + "/" + edge + "/" + kph + "/" + dist
+                    self.s.send(instruction.encode('utf-8'))
+                except:
+                    print "Error decoding and sending instruction"
+
         except socket.error:
             print("car client became disconnected")
+        except:
+            print instruction
 
 
 class CarServer(SimpleServer):
@@ -41,4 +50,5 @@ if __name__ == "__main__":
     print("starting server")
     print(socket.gethostname())
     server = CarServer()
+    print server.port
     server.serve()
