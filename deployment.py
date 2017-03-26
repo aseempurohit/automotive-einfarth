@@ -12,6 +12,8 @@ from fabric.operations import put
 from fabric.operations import get
 from fabric.operations import sudo
 
+env.hosts = ['slow.secret.equipment']
+env.user = 'ubuntu'
 
 def deployDocker():
     run("rm -rf /home/ubuntu/car-network")
@@ -20,8 +22,7 @@ def deployDocker():
     put("Makefile", "/home/ubuntu/car-network/")
     put("lib", "/home/ubuntu/car-network/")
     put("Car*", "/home/ubuntu/car-network/")
-    with("cd /home/ubuntu/car-network"):
-        sudo("make build")
-        sudo("make run")
+    sudo("cd /home/ubuntu/car-network && make build")
+    sudo("cd /home/ubuntu/car-network && make run")
 
 
