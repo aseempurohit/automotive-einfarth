@@ -22,7 +22,7 @@ class CarRecipient(BroadcastRecipient):
                     dist = getMinDist(mouse) 
                     edge = temp[1]
                     instruction = mouse + "/" + edge + "/" + kph + "/" + dist
-                    self.s.send(instruction.encode('utf-8'))
+                    self.s.send(instruction.encode('ascii'))
                 except:
                     print "Error decoding and sending instruction"
 

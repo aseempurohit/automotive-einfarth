@@ -1,6 +1,6 @@
 
 tag = car-network
-ports = -p 5002:50024
+ports = -p 5002:5002
 broadcasttag = 127.0.0.1:5000/ens/car-network-ens-broadcast
 clienttag = 127.0.0.1:5000/ens/car-network-ens-client
 

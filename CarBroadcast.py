@@ -9,4 +9,4 @@ class CarBroadcast(SimpleBroadcast):
 
 if __name__ == "__main__":
     sb = CarBroadcast(host2=socket.gethostname())
-    sb.broadcast('10')
+    sb.broadcast('192/0')
