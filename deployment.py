@@ -23,7 +23,7 @@ def deployDocker():
     put("lib", "/home/ubuntu/car-network/")
     put("Car*", "/home/ubuntu/car-network/")
     put("carcalc.py", "/home/ubuntu/car-network/")
-    sudo("cd /home/ubuntu/car-network && make build")
-    sudo("cd /home/ubuntu/car-network && make run")
-
+    with cd("/home/ubuntu/car-network"):
+        sudo("make")
+        sudo("make run")
 
