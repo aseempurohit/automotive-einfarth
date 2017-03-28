@@ -12,7 +12,7 @@ from fabric.operations import put
 from fabric.operations import get
 from fabric.operations import sudo
 
-env.hosts = ['slow.secret.equipment']
+env.hosts = ['slow.secret.equipment','fast.secret.equipment']
 env.user = 'ubuntu'
 
 def deployDocker():

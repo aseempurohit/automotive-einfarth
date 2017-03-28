@@ -1,11 +1,13 @@
 
-import os 
+import os
 import socket
 
 from lib.SimpleServer import SimpleServer
 from lib.BroadcastRecipient import BroadcastRecipient
+from CarPacket import CarPacket
 
 from carcalc import getCarSpeed, getMinDist
+
 
 class CarRecipient(BroadcastRecipient):
     def __init__(self, socket2, address2):
@@ -14,22 +16,12 @@ class CarRecipient(BroadcastRecipient):
 
     def publish(self, instruction):
         try:
-            temp = instruction.split('/')
-            if(len(temp) == 2):
-                try:
-                    mouse = temp[0]
-                    kph = getCarSpeed(mouse) 
-                    dist = getMinDist(mouse) 
-                    edge = temp[1]
-                    instruction = mouse + "/" + edge + "/" + kph + "/" + dist
-                    self.s.send(instruction.encode('ascii'))
-                except:
-                    print "Error decoding and sending instruction"
-
+            car_packet = CarPacket.fromBytes(instruction)
+            car_packet.speed = int(getCarSpeed(car_packet.analog))
+            car_packet.dist = int(getMinDist(car_packet.analog))
+            self.s.sendall(car_packet.asBytes())
         except socket.error:
             print("car client became disconnected")
-        except:
-            print instruction
 
 
 class CarServer(SimpleServer):
