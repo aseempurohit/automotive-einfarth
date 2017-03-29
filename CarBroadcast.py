@@ -1,6 +1,10 @@
 
 import socket
-from lib.SimpleBroadcast import SimpleBroadcast
+import sys
+sys.path.append('/home/frogsf/Documents/car-base/lib')
+sys.path.append('/home/frogsf/Documents/car-base')
+sys.path.append('/home/frogsf/Documents/car-base/lib/lib')
+from SimpleBroadcast import SimpleBroadcast
 from CarPacket import CarPacket
 
 class CarBroadcast(SimpleBroadcast):
@@ -13,8 +17,8 @@ class CarBroadcast(SimpleBroadcast):
 from random import randint
 from time import time
 if __name__ == "__main__":
-    sb = CarBroadcast(host2=socket.gethostname())
-    #sb = CarBroadcast(host2='fast.secret.equipment')
+    # sb = CarBroadcast(host2=socket.gethostname())
+    sb = CarBroadcast(host2='fast.secret.equipment')
     start_time = time()
     for a in range(0,20): 
         sb.broadcast(CarPacket(randint(0,3000),True,randint(0,100), randint(0,100), a))
