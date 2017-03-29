@@ -45,6 +45,10 @@ class CarServer(SimpleServer):
 if __name__ == "__main__":
     print("starting server")
     print(socket.gethostname())
-    server = CarServer()
-    print(server.port)
-    server.serve()
+    while True:
+        server = CarServer()
+        print server.port
+        try:
+            server.serve()
+        except Exception:
+            print("bouncing server")
