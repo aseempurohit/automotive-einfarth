@@ -31,6 +31,11 @@ class CarPacket(object):
                                                                 self.distance)
 
     @staticmethod
+    def size():
+        a = CarPacket(10, True, 10, 10, 10)
+        return len(a.asBytes())
+
+    @staticmethod
     def fromBytes(value):
         value1 = struct.unpack(">I", value[0:4])[0]
         value2 = struct.unpack(">I", value[4:8])[0]
@@ -51,6 +56,7 @@ if __name__ == "__main__":
     p1 = p.asBytes()
     p2 = CarPacket.fromBytes(p1)
     print(p2.toString())
+    print("size of packet is {0} bytes".format(CarPacket.size()))
 
 
 
