@@ -1,6 +1,10 @@
 
 import os
 import socket
+import sys
+sys.path.append('/home/frogsf/Documents/car-base/lib')
+sys.path.append('/home/frogsf/Documents/car-base')
+sys.path.append('/home/frogsf/Documents/car-base/lib/lib')
 
 from lib.SimpleServer import SimpleServer
 from lib.BroadcastRecipient import BroadcastRecipient
@@ -42,5 +46,5 @@ if __name__ == "__main__":
     print("starting server")
     print(socket.gethostname())
     server = CarServer()
-    print server.port
+    print(server.port)
     server.serve()
