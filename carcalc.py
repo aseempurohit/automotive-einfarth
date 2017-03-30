@@ -1,5 +1,5 @@
-def getCarSpeed(mouseInput):
-    analogInput = float(mouseInput) / 1920.0 * 80 + 120
+def calcSpeed(mouseInput):
+    analogInput = int(mouseInput * 255 / 1000)
 
     # polynomial constants
     const_2 = -0.0092
@@ -9,7 +9,7 @@ def getCarSpeed(mouseInput):
     # second order polynomial representing the speed (kph)
     return str(int(const_2 * pow(analogInput, 2) + const_1 * analogInput + const_0))
 
-def getMinDist(mouseInput):
+def calcDist(mouseInput):
     analogInput = float(mouseInput) / 1920.0 * 80 + 120
 
     # polynomial constants
@@ -19,6 +19,12 @@ def getMinDist(mouseInput):
 
     # second order polynomial representing the speed (kph)
     return str(int(const_2 * pow(analogInput, 2) + const_1 * analogInput + const_0))
+
+def calcActualSpeed(mouseInput):
+    analogInput = int(mouseInput * 255 / 1000)
+
+
+    
 
 # test 
 # for i in range(0,19):

@@ -10,7 +10,7 @@ from lib.SimpleServer import SimpleServer
 from lib.BroadcastRecipient import BroadcastRecipient
 from CarPacket import CarPacket
 
-from carcalc import getCarSpeed, getMinDist
+from carcalc import calcSpeed, calcDist
 
 
 class CarRecipient(BroadcastRecipient):
@@ -21,8 +21,8 @@ class CarRecipient(BroadcastRecipient):
     def publish(self, instruction):
         try:
             car_packet = CarPacket.fromBytes(instruction)
-            car_packet.speed = int(getCarSpeed(car_packet.analog))
-            car_packet.dist = int(getMinDist(car_packet.analog))
+            car_packet.speed = int(calcSpeed(car_packet.analog))
+            car_packet.dist = int(calcDist(car_packet.analog))
             self.s.sendall(car_packet.asBytes())
         except socket.error:
             print("car client became disconnected")
@@ -47,7 +47,7 @@ if __name__ == "__main__":
     print(socket.gethostname())
     while True:
         server = CarServer()
-        print server.port
+        print(server.port)
         try:
             server.serve()
         except Exception:
