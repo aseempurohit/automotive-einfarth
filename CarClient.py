@@ -24,13 +24,14 @@ class CarClient(SimpleClient):
     def useValue(self, message):
         try: 
             # msg = '{h} Edge On: {e}'.format(h=self.host, e=message.edge)
-            print(self.host, message.toString())
+            # print(self.host, message.toString())
             if(self.carsReady):
-                msg = '+' + message.analog + '/' + self.dist
+                msg = '+' + str(int(message.analog * 255 / 1000)) + '/' + str(self.dist)
                 if message.edge:
                     msg += '&'
+                print('cars ready!', msg)
             else:
-                msg = '+0/'+self.dist
+                msg = '+0/'+str(self.dist)
 
             self.ser.write(msg.encode('utf-8'))
 
