@@ -14,18 +14,27 @@ serialPort = "/dev/ttyUSB0"
 class CarClient(SimpleClient):
     def __init__(self,host2='localhost', port2=5002):
         super(CarClient, self).__init__(host2, port2)
-        self.waitingToSendSerial = False
+        self.carsReady = False
         self.ser = serial.Serial(serialPort, 9600, bytesize=serial.EIGHTBITS, parity=serial.PARITY_NONE, stopbits=serial.STOPBITS_ONE, timeout=None)
+        self.dist = 200
 
     def decodeValue(self, value):
         return CarPacket.fromBytes(value)
 
-    # def useValue(self, value):
-    #     print(value.toString())
-
     def useValue(self, message):
         try: 
+            # msg = '{h} Edge On: {e}'.format(h=self.host, e=message.edge)
             print(self.host, message.toString())
+            if(self.carsReady):
+                msg = '+' + message.analog + '/' + self.dist
+                if message.edge:
+                    msg += '&'
+            else:
+                msg = '+0/'+self.dist
+
+            self.ser.write(msg.encode('utf-8'))
+
+            # print(msg)
             # temp = message.decode().split('/')
             # if(len(temp) == 5):
             #     try:
