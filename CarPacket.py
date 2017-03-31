@@ -12,7 +12,10 @@ class CarPacket(object):
 
     def asBytes(self):
         analog_bytes = struct.pack(">I", self.analog)
-        speed_bytes = struct.pack(">I", self.speed)
+        try:
+            speed_bytes = struct.pack(">I", self.speed)
+        except Exception:
+            speed_bytes = struct.pack(">I", 0)
         distance_bytes = struct.pack(">I", self.distance)
         message_bytes = struct.pack(">I", self.message_id)
         edge_byte = struct.pack(">B", self.edge)
@@ -37,6 +40,9 @@ class CarPacket(object):
 
     @staticmethod
     def fromBytes(value):
+        cps = CarPacket.size()
+        if( len(value) != cps ):
+            print("got the wrong number of bytes {0} instead of {1}".format(len(value),cps))         
         value1 = struct.unpack(">I", value[0:4])[0]
         value2 = struct.unpack(">I", value[4:8])[0]
         value3 = struct.unpack(">I", value[8:12])[0]

@@ -2,9 +2,8 @@
 import os
 import socket
 import sys
-sys.path.append('/home/frogsf/Documents/car-base/lib')
-sys.path.append('/home/frogsf/Documents/car-base')
-sys.path.append('/home/frogsf/Documents/car-base/lib/lib')
+sys.path.append('lib')
+sys.path.append('lib/lib')
 
 from lib.SimpleServer import SimpleServer
 from lib.BroadcastRecipient import BroadcastRecipient
@@ -17,15 +16,13 @@ class CarRecipient(BroadcastRecipient):
     def __init__(self, socket2, address2):
         self.s = socket2
         self.address = address2
+        self.connected = True
 
-    def publish(self, instruction):
-        try:
-            car_packet = CarPacket.fromBytes(instruction)
-            car_packet.speed = int(calcSpeed(car_packet.analog))
-            car_packet.dist = int(calcDist(car_packet.analog))
-            self.s.sendall(car_packet.asBytes())
-        except socket.error:
-            print("car client became disconnected")
+    def processBeforePublish(self, instruction):
+        car_packet = CarPacket.fromBytes(instruction)
+        car_packet.speed = int(calcSpeed(car_packet.analog))
+        car_packet.dist = int(calcDist(car_packet.analog))
+        return car_packet.asBytes()
 
 
 class CarServer(SimpleServer):
@@ -45,11 +42,5 @@ class CarServer(SimpleServer):
 if __name__ == "__main__":
     print("starting server")
     print(socket.gethostname())
-    while True:
-        server = CarServer()
-        print(server.port)
-        try:
-            server.serve()
-        except Exception:
-            print("bouncing server")
-            sleep(1)
+    server = CarServer()
+    server.serve()
