@@ -10,6 +10,7 @@ from lib.BroadcastRecipient import BroadcastRecipient
 from CarPacket import CarPacket
 
 from carcalc import calcSpeed, calcDist
+from time import sleep
 
 
 class CarRecipient(BroadcastRecipient):
@@ -42,5 +43,10 @@ class CarServer(SimpleServer):
 if __name__ == "__main__":
     print("starting server")
     print(socket.gethostname())
-    server = CarServer()
-    server.serve()
+    while True:
+        try:
+            server = CarServer()
+            server.serve()
+        except Exception:
+            sleep(10)
+      
