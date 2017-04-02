@@ -51,14 +51,14 @@ class CarClient(SimpleClient):
                 msg = '+0/'
                 # logging.debug('all cars not ready')
 
+            logging.debug(msg)
             msg += '\r\n'
 
             if self.ser is not None:
                 self.ser.write(msg.encode('utf-8'))
-                logging.debug(msg)
 
         except:
-            logging.error("error")
+            logging.error("error handling received packet or writing serial")
 
 if __name__ == "__main__":
     #sc = CarClient(host2=socket.gethostname(),port2=5002)
