@@ -29,7 +29,13 @@ buildens:
 	docker push $(broadcasttag)
 	rm Dockerfile
 
-	
+init:
+	if [ ! -d "env" ]; then /usr/bin/virtualenv -p /usr/bin/python3 env; fi
+	git submodule update --init
+	. env/bin/activate
+	env/bin/pip install parse
+
+
 stop:
 	docker stop $(tag) || echo "$(tag) not running"
 	docker rm $(tag) || echo "$(tag) container not found"
