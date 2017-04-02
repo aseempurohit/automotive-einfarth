@@ -7,6 +7,8 @@ sys.path.append('lib/lib')
 
 from lib.BroadcastRecipient import BroadcastRecipient
 from CarPacket import CarPacket
+from carcalc import calcSpeed, calcDist
+from random import randint
 import logging
 
 logging.basicConfig(level=logging.INFO,
@@ -19,13 +21,21 @@ class CarRecipient(BroadcastRecipient):
         self.connected = True
 
     def processBeforePublish(self, instruction):
-        car_packet = CarPacket.fromBytes(instruction)
-        car_packet.speed = int(calcSpeed(car_packet.analog))
-        car_packet.dist = int(calcDist(car_packet.analog))
-        logging.debug(car_packet)
-        return car_packet.asBytes()
+        car_packet = None
+        if type(instruction) == str:
+            car_packet = CarPacket.fromSimpleString(instruction)
+        elif type(instruction) == bytes:
+            car_packet = CarPacket.fromBytes(instruction)
+
+        if car_packet is not None:
+            car_packet.speed = int(calcSpeed(car_packet.analog))
+            car_packet.dist = int(calcDist(car_packet.analog))
+            logging.debug(car_packet.toString())
+            return car_packet.asBytes()
+        else:
+            return None
 
 if __name__ == "__main__":
-    cr = CarRecipient();
-    cp = CarPacket(randint(0,1000),True,randint(0,100), randint(0,100), self.messageID)
+    cr = CarRecipient()
+    cp = CarPacket(randint(0, 1000), randint(0, 100), randint(0, 100), 100, True)
     cr.processBeforePublish(cp)

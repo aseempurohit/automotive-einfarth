@@ -53,7 +53,7 @@ class CarPacket(object):
 
     @staticmethod
     def size():
-        a = CarPacket(10, True, 10, 10, 10)
+        a = CarPacket(10, 10, 10, 10, True)
         return len(a.asBytes())
 
     @staticmethod

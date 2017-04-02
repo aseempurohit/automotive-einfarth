@@ -10,7 +10,6 @@ from lib.BroadcastRecipient import BroadcastRecipient
 from CarPacket import CarPacket
 from CarRecipient import CarRecipient
 
-from carcalc import calcSpeed, calcDist
 from time import sleep
 
 class CarServer(SimpleServer):
