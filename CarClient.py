@@ -36,14 +36,22 @@ class CarClient(SimpleClient):
             logging.error("serial not available")
 
         self.dist = 200
+        logging.info("initialized")
 
     def decodeValue(self, value):
+        logging.info(value)
         try:
             if type(value) == bytes:
                 return CarPacket.fromBytes(value)
         except WrongSizeException:
                 return CarPacket.fromSimpleString(value.decode('utf-8'))
         return None
+
+    def fromBytesToString(self, value):
+        logging.debug(" bytes to string invoked {0}".format(value))
+        a = CarPacket.fromBytes(value)
+        s1 = a.simpleString()
+        return s1
 
     def useValue(self, message):
         logging.debug(message.toString())
@@ -67,7 +75,7 @@ class CarClient(SimpleClient):
             logging.error("error handling received packet or writing serial")
 
 if __name__ == "__main__":
-    #sc = CarClient(host2=socket.gethostname(),port2=5002)
+    sc = CarClient(host2='frogsf-dt3',port2=4999)
     # sc = CarClient(host2='fast.secret.equipment',port2=5002)
-    sc = CarClient(host2='slow.secret.equipment', port2=5002)
+    #sc = CarClient(host2='slow.secret.equipment', port2=5002)
     sc.subscribe()

@@ -29,10 +29,6 @@ class CarServer(SimpleServer):
 if __name__ == "__main__":
     print("starting server")
     print(socket.gethostname())
-    while True:
-        try:
-            server = CarServer()
-            server.serve()
-        except Exception:
-            sleep(10)
+    server = CarServer()
+    server.serve()
       
