@@ -16,8 +16,8 @@ class CarBroadcast(SimpleBroadcast):
 from random import randint
 from time import time
 if __name__ == "__main__":
-    #sb = CarBroadcast(host2=socket.gethostname())
-    sb = CarBroadcast(host2='slow.secret.equipment')
+    sb = CarBroadcast(host2=socket.gethostname())
+    # sb = CarBroadcast(host2='slow.secret.equipment')
     start_time = time()
     for a in range(0,20): 
         v1 = abs(randint(0,3000))

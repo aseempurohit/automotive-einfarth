@@ -8,23 +8,10 @@ sys.path.append('lib/lib')
 from lib.SimpleServer import SimpleServer
 from lib.BroadcastRecipient import BroadcastRecipient
 from CarPacket import CarPacket
+from CarRecipient import CarRecipient
 
 from carcalc import calcSpeed, calcDist
 from time import sleep
-
-
-class CarRecipient(BroadcastRecipient):
-    def __init__(self, socket2, address2):
-        self.s = socket2
-        self.address = address2
-        self.connected = True
-
-    def processBeforePublish(self, instruction):
-        car_packet = CarPacket.fromBytes(instruction)
-        car_packet.speed = int(calcSpeed(car_packet.analog))
-        car_packet.dist = int(calcDist(car_packet.analog))
-        return car_packet.asBytes()
-
 
 class CarServer(SimpleServer):
     def __init__(self, port2=5002):
