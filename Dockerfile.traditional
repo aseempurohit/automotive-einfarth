@@ -10,5 +10,4 @@ COPY . /frog/
 WORKDIR /frog/
 
 CMD ["/usr/bin/python","CarServer.py"]
-EXPOSE 50024
-
+EXPOSE 5002
