@@ -5,40 +5,16 @@ import optparse
 import logging
 
 from lib.SimpleServer import SimpleServer
-
-from carcalc import getCarSpeed, getMinDist
+from lib.BroadcastRecipient import BroadcastRecipient
+from CarPacket import CarPacket
+from CarRecipient import CarRecipient
 
 
 logging.basicConfig(level=logging.DEBUG,
                         format='%(asctime)-15s %(levelname)-8s %(filename)-16s %(lineno)4d %(message)s')
 
-# TO-DO: test
-# class CarRecipient(BroadcastRecipient):
-#     def __init__(self, socket2, address2):
-#         self.s = socket2
-#         self.address = address2
-
-#     def publish(self, instruction):
-#         try:
-#             temp = instruction.split('/')
-#             if(len(temp) == 2):
-#                 try:
-#                     mouse = temp[0]
-#                     kph = getCarSpeed(mouse) 
-#                     dist = getMinDist(mouse) 
-#                     edge = temp[1]
-#                     instruction = mouse + "/" + edge + "/" + kph + "/" + dist
-#                     self.s.send(instruction.encode('utf-8'))
-#                 except:
-#                     print "Error decoding and sending instruction"
-
-#         except socket.error:
-#             print("car client became disconnected")
-#         except:
-#             print instruction
-
 class CarServerENS(SimpleServer):
-    def __init__(self, port2=5000):
+    def __init__(self, port2=5002):
         super(CarServerENS, self).__init__(port1=port2)
         self.port = port2
         
@@ -67,12 +43,11 @@ class CarServerENS(SimpleServer):
         else:
             logging.error("not using redis - USE_REDIS not set")
 
-    # TO-DO: test
-    # def addClient(self, connection, address1):
-    #     if self.listener is None:
-    #         self.clients.append(CarRecipient(connection, address1))
-    #     if self.listener is not None:
-    #         self.listener.addClient(CarRecipient(connection, address1))
+    def addClient(self, connection, address1):
+        if self.listener is None:
+            self.clients.append(CarRecipient(connection, address1))
+        if self.listener is not None:
+            self.listener.addClient(CarRecipient(connection, address1))
 
 
 if __name__ == "__main__":
