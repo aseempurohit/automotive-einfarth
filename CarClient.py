@@ -3,6 +3,7 @@ import socket
 from time import time, sleep
 import sys
 import logging
+from CarPacket import WrongSizeException
 try:
     import serial
 except ImportError:
@@ -37,21 +38,26 @@ class CarClient(SimpleClient):
         self.dist = 200
 
     def decodeValue(self, value):
-        return CarPacket.fromBytes(value)
+        try:
+            if type(value) == bytes:
+                return CarPacket.fromBytes(value)
+        except WrongSizeException:
+                return CarPacket.fromSimpleString(value.decode('utf-8'))
+        return None
 
     def useValue(self, message):
-        # logging.debug(message.toString())
+        logging.debug(message.toString())
         try:
             if(self.carsReady):
                 msg = '+' + str(int(message.analog * 255 / 1000)) + '/' + str(self.dist)
                 if message.edge:
                     msg += '&'
-                # logging.debug('cars ready, sending')
+                logging.debug('cars ready, sending')
             else:
                 msg = '+0/'
-                # logging.debug('all cars not ready')
+                logging.debug('all cars not ready')
 
-            logging.debug(msg)
+            logging.info(msg)
             msg += '\r\n'
 
             if self.ser is not None:
