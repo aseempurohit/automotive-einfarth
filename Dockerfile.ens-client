@@ -5,7 +5,7 @@ ENV https_proxy https://165.225.104.34:80
 RUN echo "8.8.8.8" >> /etc/resolv.conf
 RUN echo "8.8.4.4" >> /etc/resolv.conf
 RUN apt-get update
-RUN apt-get install -y python python-redis
+RUN apt-get install -y python python-redis python-parse
 RUN mkdir /frog
 COPY . /frog/
 WORKDIR /frog/
