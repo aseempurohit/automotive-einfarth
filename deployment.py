@@ -25,5 +25,13 @@ def deployDocker():
     put("carcalc.py", "/home/ubuntu/car-network/")
     with cd("/home/ubuntu/car-network"):
         sudo("make build")
-        sudo("make run")
+    put("conf/carnetwork.systemd", "/home/ubuntu/")
+    sudo("chmod 644 /home/ubuntu/carnetwork.systemd")
+    sudo("mv /home/ubuntu/carnetwork.systemd /etc/systemd/system/carnetwork.service")
+    sudo("systemctl daemon-reload")
+    sudo("systemctl start --no-block arnetwork")
+    sudo("systemctl enable carnetwork")
+
+
+
 
