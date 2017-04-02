@@ -2,6 +2,12 @@ import struct
 from random import randint
 from parse import parse
 
+
+class WrongSizeException(Exception):
+    def __init__(self,*args,**kwargs):
+        Exception.__init__(self,*args,**kwargs)
+
+
 class CarPacket(object):
     def __init__(self, value1, speed1, dist1, message_id1, edge1, version1=0):
         self.analog = int(value1)
@@ -57,8 +63,13 @@ class CarPacket(object):
     @staticmethod
     def fromBytes(value):
         cps = CarPacket.size()
-        if len(value) != cps:
-            print("got the wrong number of bytes {0} instead of {1}".format(len(value),cps))         
+
+        if len(value) != cps and len(value) % cps != 0:
+            raise WrongSizeException()
+
+        if len(value) > cps and len(value) % cps == 0:
+            value = value[0:cps-1]
+
         analog = struct.unpack(">I", value[0:4])[0]
         speed = struct.unpack(">I", value[4:8])[0]
         distance = struct.unpack(">I", value[8:12])[0]
