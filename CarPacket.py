@@ -1,7 +1,10 @@
 import struct
 from random import randint
 from parse import parse
+import logging
 
+logging.basicConfig(level=logging.DEBUG,
+                        format='%(asctime)-15s %(levelname)-8s %(filename)-16s %(lineno)4d %(message)s')
 
 class WrongSizeException(Exception):
     def __init__(self,*args,**kwargs):
@@ -30,7 +33,7 @@ class CarPacket(object):
         
         message_bytes = struct.pack(">I", self.message_id)
         
-        version_byte = struct.pack(">b", self.version)
+        version_byte = struct.pack(">B", self.version)
         all_bytes = analog_bytes
         all_bytes += speed_bytes
         all_bytes += distance_bytes
