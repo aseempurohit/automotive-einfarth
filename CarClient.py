@@ -4,6 +4,7 @@ from time import time, sleep
 import sys
 import logging
 from CarPacket import WrongSizeException
+from carcalc import calcActualSpeed
 try:
     import serial
 except ImportError:
@@ -29,13 +30,13 @@ class CarClient(SimpleClient):
         super(CarClient, self).__init__(host2, port2)
         self.carsReady = False
         self.ser = None
+        self.theta = 2
 
         try:
             self.ser = serial.Serial(device_location, 9600, bytesize=serial.EIGHTBITS, parity=serial.PARITY_NONE, stopbits=serial.STOPBITS_ONE, timeout=None)
         except NameError:
             logging.error("serial not available")
 
-        self.dist = 200
         logging.info("initialized")
 
     def decodeValue(self, value):
@@ -56,8 +57,9 @@ class CarClient(SimpleClient):
     def useValue(self, message):
         logging.debug(message.toString())
         try:
+            dist = int(calcActualSpeed(message.analog) * self.theta * 2 / 1000)
             if(self.carsReady):
-                msg = '+' + str(int(message.analog * 255 / 1000)) + '/' + str(self.dist)
+                msg = '+' + str(int(message.analog * 255 / 1000)) + '/' + str(dist)
                 if message.edge:
                     msg += '&'
                 logging.debug('cars ready, sending')
