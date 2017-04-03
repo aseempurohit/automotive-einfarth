@@ -43,16 +43,15 @@ class CarClient(SimpleClient):
         # logging.debug(message.toString())
         try:
             if(self.carsReady):
-                msg = '+' + str(int(message.analog * 255 / 1000)) + '/' + str(self.dist)
+                targetLaptime = str(int((1000 - message.analog) * 1.7 + 1700))
+                msg = '+' + targetLaptime + '/' + str(self.dist)
                 if message.edge:
                     msg += '&'
-                # logging.debug('cars ready, sending')
             else:
-                msg = '+0/'
-                # logging.debug('all cars not ready')
+                msg = '+3700/'
 
             logging.debug(msg)
-            msg += '\r\n'
+            msg += '\n'
 
             if self.ser is not None:
                 self.ser.write(msg.encode('utf-8'))
@@ -61,7 +60,7 @@ class CarClient(SimpleClient):
             logging.error("error handling received packet or writing serial")
 
 if __name__ == "__main__":
-    #sc = CarClient(host2=socket.gethostname(),port2=5002)
+    sc = CarClient(host2=socket.gethostname(),port2=5002)
     # sc = CarClient(host2='fast.secret.equipment',port2=5002)
-    sc = CarClient(host2='slow.secret.equipment', port2=5002)
+    # sc = CarClient(host2='slow.secret.equipment', port2=5002)
     sc.subscribe()
