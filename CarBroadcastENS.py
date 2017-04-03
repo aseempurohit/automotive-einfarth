@@ -1,10 +1,11 @@
 
 import socket
 from lib.SimpleBroadcast import SimpleBroadcast
+from CarBroadcast import CarBroadcast
 from ens import ensclient
 
 
-class CarBroadcastENS(SimpleBroadcast):
+class CarBroadcastENS(CarBroadcast):
     def __init__(self, host2='localhost', port2=5000):
         super(CarBroadcastENS, self).__init__(host1=host2, port1=port2)
         self.identifier = "mec.maintenance-car-pitcher"

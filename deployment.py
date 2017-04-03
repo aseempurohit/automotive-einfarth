@@ -13,23 +13,23 @@ from fabric.operations import get
 from fabric.operations import sudo
 
 #env.hosts = ['slow.secret.equipment','fast.secret.equipment']
-env.user = 'ubuntu'
+#env.user = 'ubuntu'
 
 def deployDocker():
-    run("rm -rf /home/ubuntu/car-network")
-    run("mkdir -p /home/ubuntu/car-network")
-    put("Dockerfile.traditional", "/home/ubuntu/car-network/")
-    put("Makefile", "/home/ubuntu/car-network/")
-    put("lib", "/home/ubuntu/car-network/")
-    put("Car*", "/home/ubuntu/car-network/")
-    put("carcalc.py", "/home/ubuntu/car-network/")
-    with cd("/home/ubuntu/car-network"):
+    run("rm -rf ~/car-network")
+    run("mkdir -p ~/car-network")
+    put("Dockerfile.traditional", "~/car-network/")
+    put("Makefile", "~/car-network/")
+    put("lib", "~/car-network/")
+    put("Car*", "~/car-network/")
+    put("carcalc.py", "~/car-network/")
+    with cd("~/car-network"):
         sudo("make build")
-    put("conf/carnetwork.systemd", "/home/ubuntu/")
-    sudo("chmod 644 /home/ubuntu/carnetwork.systemd")
-    sudo("mv /home/ubuntu/carnetwork.systemd /etc/systemd/system/carnetwork.service")
+    put("conf/carnetwork.systemd", "~/")
+    sudo("chmod 644 ~/carnetwork.systemd")
+    sudo("mv ~/carnetwork.systemd /etc/systemd/system/carnetwork.service")
     sudo("systemctl daemon-reload")
-    sudo("systemctl start --no-block arnetwork")
+    sudo("systemctl start --no-block carnetwork")
     sudo("systemctl enable carnetwork")
 
 

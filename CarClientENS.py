@@ -2,21 +2,21 @@
 import sys
 import socket
 from lib.SimpleClient import SimpleClient
+from CarClient import CarClient
 from ens import ensclient
 
 
-class CarClientENS(SimpleClient):
+class CarClientENS(CarClient):
     def __init__(self, host2='localhost', port2=5000):
         super(CarClientENS, self).__init__(host2, port2)
         self.identifier = "mec.car-network-catcher"
         self.network = "micro-car-network.test-network"
         self.session = None
-        
+
     def closestEndpoint(ensEndpoints):
         pass
         # TODO: find and return closest of ENSEndpoints
-        
-    
+
     def findEndpoints(self, cloudhost):
         c = ensclient.ENSClient(cloudhost, self.identifier)
         if c.init():
@@ -27,14 +27,14 @@ class CarClientENS(SimpleClient):
                 print "host {0} port {1}".format(self.endpoint.host, self.endpoint.port)
             else:
                 print "failed to connect to ar-network"
-                
+
         else:
             print "failed to initialize"
             sys.exit(1)
 
 
-    
-        
+
+
 
 if __name__ == "__main__":
     sc = CarClientENS()
