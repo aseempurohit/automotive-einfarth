@@ -5,6 +5,8 @@ import sys
 import logging
 from CarPacket import WrongSizeException
 from carcalc import calcActualSpeed
+from pythonosc import osc_message_builder
+from pythonosc import udp_client
 try:
     import serial
 except ImportError:
@@ -32,6 +34,8 @@ class CarClient(SimpleClient):
         self.ser = None
         self.theta = 2
 
+        self.screen_client = udp_client.UDPClient('127.0.0.1', 7002)
+
         try:
             self.ser = serial.Serial(device_location, 9600, bytesize=serial.EIGHTBITS, parity=serial.PARITY_NONE, stopbits=serial.STOPBITS_ONE, timeout=None)
         except NameError:
@@ -55,17 +59,22 @@ class CarClient(SimpleClient):
         return s1
 
     def useValue(self, message):
-        logging.debug(message.toString())
+        # logging.debug(message.toString())
         try:
             dist = int(calcActualSpeed(message.analog) * self.theta * 2 / 1000)
+
+
             if(self.carsReady):
                 msg = '+' + str(int(message.analog * 255 / 1000)) + '/' + str(dist)
                 if message.edge:
                     msg += '&'
                 logging.debug('cars ready, sending')
+                self.screen_client.send(buildMessage('/cardata', message.speed, message.distance, message.edge))
             else:
                 msg = '+0/'
                 logging.debug('all cars not ready')
+                paused = osc_message_builder.OscMessageBuilder(address='/paused')
+                self.screen_client.send(paused.build())
 
             logging.info(msg)
             msg += '\r\n'
@@ -75,6 +84,17 @@ class CarClient(SimpleClient):
 
         except:
             logging.error("error handling received packet or writing serial")
+
+def buildMessage(address1, speed, dist, edge):
+    builder = osc_message_builder.OscMessageBuilder(address=address1)
+    builder.add_arg(speed, builder.ARG_TYPE_INT)
+    builder.add_arg(dist, builder.ARG_TYPE_INT)
+    if edge:
+        builder.add_arg(tf, builder.ARG_TYPE_TRUE)
+    else:
+        builder.add_arg(tf, builder.ARG_TYPE_FALSE)
+
+    return builder.build()
 
 if __name__ == "__main__":
     sc = CarClient(host2='frogsf-dt3',port2=4999)
