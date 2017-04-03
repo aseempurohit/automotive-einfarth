@@ -4,11 +4,9 @@ ports = -p 5002:5002
 broadcasttag = 127.0.0.1:5000/ens/car-network-ens-broadcast
 clienttag = 127.0.0.1:5000/ens/car-network-ens-client
 
-init:
-	git submodule update --init 
-
-build:
+build: stop
 	cp Dockerfile.traditional Dockerfile
+	sudo docker rmi -f car-network || echo "no car-network image"
 	docker build -t $(tag) ./
 	rm Dockerfile
 
@@ -34,6 +32,8 @@ init:
 	git submodule update --init
 	. env/bin/activate
 	env/bin/pip install parse
+	env/bin/pip install python-osc
+	env/bin/pip install serial
 
 
 stop:

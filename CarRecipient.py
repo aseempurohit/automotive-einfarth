@@ -22,10 +22,10 @@ class CarRecipient(BroadcastRecipient):
 
     def processBeforePublish(self, instruction):
         car_packet = None
-        if type(instruction) == str:
-            car_packet = CarPacket.fromSimpleString(instruction)
-        elif type(instruction) == bytes:
+        if type(instruction) == bytes:
             car_packet = CarPacket.fromBytes(instruction)
+        elif type(instruction) == str:
+            car_packet = CarPacket.fromSimpleString(instruction)
 
         if car_packet is not None:
             car_packet.speed = int(calcSpeed(car_packet.analog))
