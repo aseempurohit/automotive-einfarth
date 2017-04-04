@@ -1,6 +1,7 @@
 
 import socket
 from time import time, sleep
+import random
 import sys
 sys.path.append('lib')
 sys.path.append('lib/lib')
@@ -33,6 +34,7 @@ class CarClient(SimpleClient):
     def __init__(self, host2='localhost', port2=5002):
         super(CarClient, self).__init__(host2, port2)
         self.carsReady = False
+        self.calibrateCars = False
         self.ser = None
         self.theta = 2
 
@@ -46,13 +48,14 @@ class CarClient(SimpleClient):
         logging.info("initialized")
 
     def decodeValue(self, value):
-        logging.info(value)
-        logging.debug(len(value))
+        # logging.info(value)
         try:
             if type(value) == bytes:
                 return CarPacket.fromBytes(value)
         except WrongSizeException:
                 return CarPacket.fromSimpleString(value.decode('utf-8'))
+        except:
+            return None
         return None
 
     def fromBytesToString(self, value):
@@ -64,29 +67,39 @@ class CarClient(SimpleClient):
     def useValue(self, message):
         # logging.debug(message.toString())
         try:
-            dist = int(calcActualSpeed(message.analog) * self.theta * 2 / 1000)
 
             if(self.carsReady):
-                logging.debug(msg)
-                targetLaptime = str(int((1000 - message.analog) * 1.7 + 1700))
-                msg = '+' + targetLaptime + '/' + str(self.dist)
-                if message.edge:
-                    msg += '&'
-                logging.debug('cars ready, sending')
-                self.screen_client.send(buildMessage('/cardata', message.speed, message.distance, message.edge))
+                targetLaptime = int((1000 - message.analog) * 1.5 + 1900)
+                if targetLaptime > 3000:
+                    msg = '+stop/'
+                    self.screen_client.send(buildMessage('/cardata', 0, 0, message.edge))
+                else:
+                    if message.edge and self.theta is not 0.0:
+                        self.theta = 1
+                    elif self.theta is not 0.0:
+                        self.theta = round(random.uniform(5,26), 2)
+                    dist = int(message.analog / 1000 * self.theta * 2 + 4)
+                    kph = int(message.analog * 310 / 1000)
+                    msg = '+' + str(targetLaptime) + '/' + str(dist) + 'H'
+                    if message.edge:
+                        msg += '&'
+
+                    self.screen_client.send(buildMessage('/cardata', kph, dist, message.edge))
+                    logging.debug('screen osc {0} {1}'.format(kph, dist))
+
             else:
-                msg = '+3700/'
-                logging.debug('all cars not ready')
+                msg = '+stop/'
                 paused = osc_message_builder.OscMessageBuilder(address='/paused')
                 self.screen_client.send(paused.build())
 
-            logging.info(msg)
+            logging.debug(msg)
             msg += '\n'
 
             if self.ser is not None:
                 self.ser.write(msg.encode('utf-8'))
 
         except:
+            raise
             logging.error("error handling received packet or writing serial")
 
 def buildMessage(address1, speed, dist, edge):
@@ -94,9 +107,9 @@ def buildMessage(address1, speed, dist, edge):
     builder.add_arg(speed, builder.ARG_TYPE_INT)
     builder.add_arg(dist, builder.ARG_TYPE_INT)
     if edge:
-        builder.add_arg(tf, builder.ARG_TYPE_TRUE)
+        builder.add_arg(edge, builder.ARG_TYPE_TRUE)
     else:
-        builder.add_arg(tf, builder.ARG_TYPE_FALSE)
+        builder.add_arg(edge, builder.ARG_TYPE_FALSE)
 
     return builder.build()
 
