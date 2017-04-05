@@ -70,7 +70,7 @@ class CarClient(SimpleClient):
 
             if(self.carsReady):
                 targetLaptime = int((1000 - message.analog) * 1.5 + 1900)
-                if targetLaptime > 3000:
+                if targetLaptime > 2700:
                     msg = '+stop/'
                     self.screen_client.send(buildMessage('/cardata', 0, 0, message.edge))
                 else:
@@ -78,8 +78,9 @@ class CarClient(SimpleClient):
                         self.theta = 1
                     elif self.theta is not 0.0:
                         self.theta = round(random.uniform(5,26), 2)
-                    dist = int(message.analog / 1000 * self.theta * 2 + 4)
-                    kph = int(message.analog * 310 / 1000)
+                    dist = round(message.analog / 1000 * self.theta * 2 + 4, 2)
+                    kph = max(60,int((message.analog - 500) * 310 / 500))
+                    # kph = int(message.analog * 310 / 1000)
                     msg = '+' + str(targetLaptime) + '/' + str(dist) + 'H'
                     if message.edge:
                         msg += '&'
@@ -105,7 +106,7 @@ class CarClient(SimpleClient):
 def buildMessage(address1, speed, dist, edge):
     builder = osc_message_builder.OscMessageBuilder(address=address1)
     builder.add_arg(speed, builder.ARG_TYPE_INT)
-    builder.add_arg(dist, builder.ARG_TYPE_INT)
+    builder.add_arg(dist, builder.ARG_TYPE_FLOAT)
     if edge:
         builder.add_arg(edge, builder.ARG_TYPE_TRUE)
     else:
