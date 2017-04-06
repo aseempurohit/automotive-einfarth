@@ -34,9 +34,9 @@ class CarClient(SimpleClient):
     def __init__(self, host2='localhost', port2=5002):
         super(CarClient, self).__init__(host2, port2)
         self.carsReady = False
-        self.calibrateCars = False
         self.ser = None
         self.theta = 2
+        self.isDriving = False
 
         self.screen_client = udp_client.UDPClient('127.0.0.1', 7002)
 
@@ -67,29 +67,24 @@ class CarClient(SimpleClient):
     def useValue(self, message):
         # logging.debug(message.toString())
         try:
-
-            if(self.carsReady):
-                targetLaptime = int((1000 - message.analog) * 1.5 + 1900)
-                if targetLaptime > 2700:
-                    msg = '+stop/'
-                    self.screen_client.send(buildMessage('/cardata', 0, 0, message.edge))
-                else:
-                    if message.edge and self.theta is not 0.0:
-                        self.theta = 1
-                    elif self.theta is not 0.0:
-                        self.theta = round(random.uniform(5,26), 2)
-                    dist = round(message.analog / 1000 * self.theta * 2 + 4, 2)
-                    kph = max(60,int((message.analog - 500) * 310 / 500))
-                    # kph = int(message.analog * 310 / 1000)
-                    msg = '+' + str(targetLaptime) + '/' + str(dist) + 'H'
+            if self.carsReady:
+                if message.analog > 200:
+                    self.isDriving = True
+                    targetLaptime = int((800 - message.analog) * 1.5 + 2000)
+                    dist = round(message.analog / 800 * self.theta * 2 + 3, 2)
+                    kph = int((message.analog-199) * 42 / 800 + 169) 
+                    msg = '+' + str(targetLaptime) + '/' + str(dist)
                     if message.edge:
                         msg += '&'
-
                     self.screen_client.send(buildMessage('/cardata', kph, dist, message.edge))
-                    logging.debug('screen osc {0} {1}'.format(kph, dist))
+                else:
+                    self.isDriving = False
+                    self.screen_client.send(buildMessage('/cardata', 0, 0, message.edge))
+                    msg = '+S'
 
             else:
-                msg = '+stop/'
+                self.isDriving = False
+                msg = '+S'
                 paused = osc_message_builder.OscMessageBuilder(address='/paused')
                 self.screen_client.send(paused.build())
 
@@ -97,7 +92,10 @@ class CarClient(SimpleClient):
             msg += '\n'
 
             if self.ser is not None:
+                logging.debug(msg)
+                self.ser.reset_output_buffer()
                 self.ser.write(msg.encode('utf-8'))
+                self.ser.flush()
 
         except:
             raise
