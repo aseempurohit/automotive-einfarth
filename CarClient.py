@@ -1,7 +1,8 @@
 
 import socket
 from time import time, sleep
-import random
+import threading
+import os
 import sys
 sys.path.append('lib')
 sys.path.append('lib/lib')
@@ -10,6 +11,7 @@ from CarPacket import WrongSizeException
 from carcalc import calcActualSpeed
 from pythonosc import osc_message_builder
 from pythonosc import udp_client
+from uuid import uuid4
 try:
     import serial
 except ImportError:
@@ -30,6 +32,20 @@ if len(sys.argv) > 1:
     device_location = sys.argv[1]
     logging.debug(device_location)
 
+class StoppableThread(threading.Thread):
+    """Thread class with a stop() method. The thread itself has to check
+    regularly for the stopped() condition."""
+
+    def __init__(self, *args, **kwargs):
+        super(StoppableThread, self).__init__(*args, **kwargs)
+        self._stop = threading.Event()
+
+    def stop(self):
+        self._stop.set()
+
+    def stopped(self):
+        return self._stop.isSet()
+
 class CarClient(SimpleClient):
     def __init__(self, host2='localhost', port2=5002):
         super(CarClient, self).__init__(host2, port2)
@@ -37,8 +53,12 @@ class CarClient(SimpleClient):
         self.ser = None
         self.theta = 2
         self.isDriving = False
+        self.lastWrite = int(time())
 
         self.screen_client = udp_client.UDPClient('127.0.0.1', 7002)
+
+        # self.timeoutThread = StoppableThread(target=self.serialTimeout)
+        # self.timeoutThread.start()
 
         try:
             self.ser = serial.Serial(device_location, 9600, bytesize=serial.EIGHTBITS, parity=serial.PARITY_NONE, stopbits=serial.STOPBITS_ONE, timeout=None)
@@ -64,15 +84,26 @@ class CarClient(SimpleClient):
         s1 = a.simpleString()
         return s1
 
+    # def serialTimeout(self):
+    #     while not self.timeoutThread.stopped():
+    #         t = int(time())
+    #         # logging.debug("{0} {1}".format(t, self.lastWrite))
+    #         if (t - self.lastWrite) > 3:
+    #             logging.debug("{0} {1}".format(t, self.lastWrite))
+    #             # logging.error("serial timeout")
+    #             # os._exit(1)
+    #             sleep(1)
+    #         sleep(.1)
+
     def useValue(self, message):
         # logging.debug(message.toString())
         try:
             if self.carsReady:
-                if message.analog > 200:
+                if message.analog > 50:
                     self.isDriving = True
-                    targetLaptime = int((800 - message.analog) * 1.5 + 2000)
-                    dist = round(message.analog / 800 * self.theta * 2 + 3, 2)
-                    kph = int((message.analog-199) * 42 / 800 + 169) 
+                    targetLaptime = int((950 - message.analog) * 1.5 + 2000)
+                    dist = round(message.analog / 950 * self.theta * 2 + 3, 1)
+                    kph = int((message.analog-50) * 42 / 950 + 169) 
                     msg = '+' + str(targetLaptime) + '/' + str(dist)
                     if message.edge:
                         msg += '&'
@@ -88,18 +119,15 @@ class CarClient(SimpleClient):
                 paused = osc_message_builder.OscMessageBuilder(address='/paused')
                 self.screen_client.send(paused.build())
 
-            logging.debug(msg)
             msg += '\n'
 
             if self.ser is not None:
                 logging.debug(msg)
-                self.ser.reset_output_buffer()
                 self.ser.write(msg.encode('utf-8'))
-                self.ser.flush()
 
         except:
-            raise
             logging.error("error handling received packet or writing serial")
+            raise Exception()
 
 def buildMessage(address1, speed, dist, edge):
     builder = osc_message_builder.OscMessageBuilder(address=address1)
