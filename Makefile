@@ -5,6 +5,7 @@ broadcasttag = 127.0.0.1:5000/ens/car-network-ens-broadcast
 clienttag = 127.0.0.1:5000/ens/car-network-ens-client
 
 build: stop
+	docker rmi -f $(tag) || echo "no such image"
 	cp Dockerfile.traditional Dockerfile
 	sudo docker rmi -f car-network || echo "no car-network image"
 	docker build -t $(tag) ./
