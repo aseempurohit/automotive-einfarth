@@ -54,11 +54,9 @@ class CarClient(SimpleClient):
         self.theta = 2
         self.isDriving = False
         self.lastWrite = int(time())
+        self.numberOfBytesToRead = CarPacket.size()
 
         self.screen_client = udp_client.UDPClient('127.0.0.1', 7002)
-
-        # self.timeoutThread = StoppableThread(target=self.serialTimeout)
-        # self.timeoutThread.start()
 
         try:
             self.ser = serial.Serial(device_location, 9600, bytesize=serial.EIGHTBITS, parity=serial.PARITY_NONE, stopbits=serial.STOPBITS_ONE, timeout=None)
@@ -84,17 +82,6 @@ class CarClient(SimpleClient):
         s1 = a.simpleString()
         return s1
 
-    # def serialTimeout(self):
-    #     while not self.timeoutThread.stopped():
-    #         t = int(time())
-    #         # logging.debug("{0} {1}".format(t, self.lastWrite))
-    #         if (t - self.lastWrite) > 3:
-    #             logging.debug("{0} {1}".format(t, self.lastWrite))
-    #             # logging.error("serial timeout")
-    #             # os._exit(1)
-    #             sleep(1)
-    #         sleep(.1)
-
     def useValue(self, message):
         # logging.debug(message.toString())
         try:
@@ -102,11 +89,13 @@ class CarClient(SimpleClient):
                 if message.analog > 50:
                     self.isDriving = True
                     targetLaptime = int((950 - message.analog) * 1.5 + 2000)
-                    dist = round(message.analog / 950 * self.theta * 2 + 3, 1)
                     kph = int((message.analog-50) * 42 / 950 + 169) 
-                    msg = '+' + str(targetLaptime) + '/' + str(dist)
                     if message.edge:
-                        msg += '&'
+                        dist = min(6.8, round(message.analog / 950 * self.theta * 2 + 3, 1))
+                        msg = '+' + str(targetLaptime) + '/' + str(dist) + '&'
+                    else:
+                        dist = max(6.8, round(message.analog / 950 * self.theta * 2 + 3, 1))
+                        msg = '+' + str(targetLaptime) + '/' + str(dist)
                     self.screen_client.send(buildMessage('/cardata', kph, dist, message.edge))
                 else:
                     self.isDriving = False
