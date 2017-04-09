@@ -17,7 +17,7 @@ try:
 except ImportError:
     print("serial library not imported")
 
-logging.basicConfig(level=logging.DEBUG,
+logging.basicConfig(level=logging.INFO,
                         format='%(asctime)-15s %(levelname)-8s %(filename)-16s %(lineno)4d %(message)s')
 sys.path.append('./')
 sys.path.append('lib')
@@ -62,18 +62,28 @@ class CarClient(SimpleClient):
             self.ser = serial.Serial(device_location, 9600, bytesize=serial.EIGHTBITS, parity=serial.PARITY_NONE, stopbits=serial.STOPBITS_ONE, timeout=None)
         except NameError:
             logging.error("serial not available")
+        except serial.serialutil.SerialException:
+            logging.error("serial not available")
 
         logging.info("initialized")
 
     def decodeValue(self, value):
-        # logging.info(value)
+        logging.debug(value)
         try:
             if type(value) == bytes:
+                logging.debug("it was bytes!")
                 return CarPacket.fromBytes(value)
-        except WrongSizeException:
+            elif type(value) == str:
+                logging.debug("it was a string!")
                 return CarPacket.fromSimpleString(value.decode('utf-8'))
-        except:
+
+        except WrongSizeException:
+            logging.error("wrong size exception")
+            return CarPacket.fromSimpleString(value.decode('utf-8'))
+        except Exception:
+            logging.error("unknown exception")
             return None
+        logging.error("uncaught")
         return None
 
     def fromBytesToString(self, value):
@@ -83,7 +93,7 @@ class CarClient(SimpleClient):
         return s1
 
     def useValue(self, message):
-        # logging.debug(message.toString())
+        logging.debug(message.toString())
         try:
             if self.carsReady:
                 if message.analog > 50:
@@ -132,5 +142,6 @@ def buildMessage(address1, speed, dist, edge):
 if __name__ == "__main__":
     # sc = CarClient(host2='frogsf-dt3',port2=4999)
     sc = CarClient(host2='fast.secret.equipment',port2=5002)
+    #sc = CarClient(socket.gethostname(), 4999)
     #sc = CarClient(host2='slow.secret.equipment', port2=5002)
     sc.subscribe()
