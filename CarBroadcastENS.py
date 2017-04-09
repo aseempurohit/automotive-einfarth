@@ -1,7 +1,9 @@
 
 import socket
+import sys
 from lib.SimpleBroadcast import SimpleBroadcast
 from CarBroadcast import CarBroadcast
+from CarPacket import CarPacket
 from ens import ensclient
 
 
@@ -11,30 +13,31 @@ class CarBroadcastENS(CarBroadcast):
         self.identifier = "mec.maintenance-car-pitcher"
         self.network = "micro-car-network.test-network"
         self.session = None
-        
-    def closestEndpoint(ensEndpoints):
-        pass
-        # TODO: find and return closest of ENSEndpoints
-        
-    
+
+
     def findEndpoints(self, cloudhost):
-        c = ensclient.ENSClient(cloudhost,self.identifier)
-        if c.init():
-            self.session = c.connect(self.network)
+        self.my_ens_client = ensclient.ENSClient(self.identifier)
+        if self.my_ens_client.init():
+            self.session = self.my_ens_client.connect(self.network)
             if self.session:
                 self.setConnection(self.session.conn)
-                self.endpoint = ensclient.ENSEndpoint(self.session.binding)
-                print "host {0} port {1}".format(self.endpoint.host, self.endpoint.port)
+                self.endpoint = ensclient.ENSEndpoint(self.session.binding["endpoint"])
+                print("host {0} port {1}".format(self.endpoint.host, self.endpoint.port))
             else:
-                print "failed to connect to ar-network"
-                
+                print("failed to connect to ar-network")
+
         else:
-            print "failed to initialize"
+            print("failed to initialize")
             sys.exit(1)
+
+    def close(self):
+        if self.my_ens_client is not None:
+            self.my_ens_client.close()
 
 
 if __name__ == "__main__":
     sb = CarBroadcastENS()
-    sb.findEndpoints("172.17.0.1")
-    sb.broadcast('10')
+    sb.findEndpoints()
+    sb.broadcast(CarPacket(1, 2, 3, 4, True))
+    sb.close()
     

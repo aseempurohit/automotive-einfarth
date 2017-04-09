@@ -17,13 +17,13 @@ class CarServerENS(SimpleServer):
     def __init__(self, port2=5002):
         super(CarServerENS, self).__init__(port1=port2)
         self.port = port2
-        
+
         redis_host = os.getenv('REDIS_SERVICE_HOST')
-        
+
         if not redis_host:
             logging.error("REDIS_SERVICE_HOST not set")
             sys.exit(1)
-            
+
         redis_port = 6397
         try:
             redis_port = int(os.getenv('REDIS_SERVICE_PORT'))
@@ -42,6 +42,14 @@ class CarServerENS(SimpleServer):
                 logging.error("not using redis, USE_REDIS != TRUE")
         else:
             logging.error("not using redis - USE_REDIS not set")
+
+    def fromBytesToString(self, value):
+        if type(value) == bytes:
+            a = CarPacket.fromBytes(value)
+            s1 = a.simpleString()
+            return s1
+        if type(value) == str:
+            return value
 
     def addClient(self, connection, address1):
         if self.listener is None:
