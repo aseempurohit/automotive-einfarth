@@ -7,6 +7,7 @@ sys.path.append('lib/lib')
 
 from lib.BroadcastRecipient import BroadcastRecipient
 from CarPacket import CarPacket
+from CarPacket import WrongSizeException
 from carcalc import calcSpeed, calcDist
 from random import randint
 import logging
@@ -23,7 +24,10 @@ class CarRecipient(BroadcastRecipient):
     def processBeforePublish(self, instruction):
         car_packet = None
         if type(instruction) == bytes:
-            car_packet = CarPacket.fromBytes(instruction)
+            try:
+                car_packet = CarPacket.fromBytes(instruction)
+            except WrongSizeException:
+                car_packet = CarPacket.fromSimpleString(instruction.decode('utf-8'))
         elif type(instruction) == str:
             car_packet = CarPacket.fromSimpleString(instruction)
 
