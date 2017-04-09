@@ -36,7 +36,7 @@ class CarServerENS(SimpleServer):
 
         if os.getenv("USE_REDIS"):
             if os.getenv("USE_REDIS").find("TRUE") > -1:
-                self.initRedis(redis_host, 'ar_value', redis_port)
+                self.initRedis(redis_host, 'car_value', redis_port)
                 logging.info("attempting to use redis with host %s and port %d watching value %s",redis_host,redis_port,'ar_value')
             else:
                 logging.error("not using redis, USE_REDIS != TRUE")
