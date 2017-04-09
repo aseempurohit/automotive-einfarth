@@ -30,11 +30,11 @@ buildens:
 
 init:
 	if [ ! -d "env" ]; then /usr/bin/virtualenv -p /usr/bin/python3 env; fi
-	git submodule update --init
+	#git submodule update --init
 	. env/bin/activate
 	env/bin/pip install parse
 	env/bin/pip install python-osc
-	env/bin/pip install serial
+	env/bin/pip install pyserial
 
 
 stop:
