@@ -20,6 +20,7 @@ if __name__ == "__main__":
     # sb = CarBroadcast(socket.gethostname(),4999)
     # sb = CarBroadcast(host2='slow.secret.equipment')
     sb = CarBroadcast(host2='fast.secret.equipment')
+    sb.connect()
     start_time = time()
     for a in range(0,20):
         v1 = abs(randint(0, 3000))
@@ -27,6 +28,6 @@ if __name__ == "__main__":
         v3 = abs(randint(0, 100))
         print(v2)
         sb.broadcast(CarPacket(v1,v2, v3, a, True))
-        sleep(0.0001)
+        sleep(0.01)
 
     print("total time {0}".format(time()-start_time))
