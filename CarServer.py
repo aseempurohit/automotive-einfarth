@@ -8,6 +8,7 @@ sys.path.append('lib/lib')
 from lib.SimpleServer import SimpleServer
 from lib.BroadcastRecipient import BroadcastRecipient
 from CarPacket import CarPacket
+from CarPacket import WrongSizeException 
 from CarRecipient import CarRecipient
 
 from time import sleep
@@ -22,9 +23,12 @@ class CarServer(SimpleServer):
                 self.initRedis('localhost', 'car_value')
     
     def fromBytesToString(self, value):
-        a = CarPacket.fromBytes(value)
-        s1 = a.simpleString()
-        return s1
+        if type(value) == bytes:
+            a = CarPacket.fromBytes(value)
+            s1 = a.simpleString()
+            return s1
+        if type(value) == str:
+            return value
     
     
     def addClient(self, connection, address1):
@@ -38,5 +42,6 @@ if __name__ == "__main__":
     print("starting server")
     print(socket.gethostname())
     server = CarServer()
+    #server.initRedis('127.0.0.1', 'car_value') 
     server.serve()
       
