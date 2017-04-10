@@ -3,7 +3,6 @@ import sys
 import os
 import optparse
 import logging
-import socket
 
 from lib.SimpleServer import SimpleServer
 from lib.BroadcastRecipient import BroadcastRecipient
@@ -15,7 +14,7 @@ logging.basicConfig(level=logging.DEBUG,
                         format='%(asctime)-15s %(levelname)-8s %(filename)-16s %(lineno)4d %(message)s')
 
 class CarServerENS(SimpleServer):
-    def __init__(self, port2):
+    def __init__(self, port2=5002):
         super(CarServerENS, self).__init__(port1=port2)
         self.port = port2
 
