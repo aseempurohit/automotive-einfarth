@@ -17,6 +17,7 @@ class CarServerENS(SimpleServer):
     def __init__(self, port2=5002):
         super(CarServerENS, self).__init__(port1=port2)
         self.port = port2
+        self.packetSize = CarPacket.size()
 
         redis_host = os.getenv('REDIS_SERVICE_HOST')
 
