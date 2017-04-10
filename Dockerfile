@@ -9,7 +9,7 @@ RUN mkdir /frog
 COPY . /frog/
 WORKDIR /frog/
 ENV USE_REDIS=TRUE
-ENV REDIS_SERVICE_HOST="10.0.100.23"
+ENV REDIS_SERVICE_HOST="2.2.2.4"
 ENV REDIS_SERVICE_PORT=6379
 
 CMD ["/usr/bin/python","CarServerENS.py","5004"]
