@@ -12,4 +12,4 @@ ENV USE_REDIS=TRUE
 ENV REDIS_SERVICE_HOST="10.0.100.23"
 ENV REDIS_SERVICE_PORT=6379
 
-CMD ["/usr/bin/python","CarServerENS.py","5001"]
+CMD ["/usr/bin/python","CarServerENS.py","5004"]
