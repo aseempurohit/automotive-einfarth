@@ -4,6 +4,7 @@ import socket
 from lib.SimpleClient import SimpleClient
 from CarClient import CarClient
 from CarPacket import CarPacket
+from CarPacket import WrongSizeException
 from ens import ensclient
 
 
@@ -15,8 +16,21 @@ class CarClientENS(CarClient):
         self.numberOfBytesToRead = CarPacket.size()
         self.session = None
         self.my_ens_client = None
+        
+        
+    def decodeValue(self, value):
+        print("decode value: {0}".format(value))
+        try:
+            if type(value) == bytes:
+                return CarPacket.fromBytes(value)
+        except WrongSizeException: 
+                return CarPacket.fromSimpleString(value.decode('utf-8'))
+        return None
 
-    def findEndpoints(self, cloudhost):
+    def useValue(self, value):
+        print(value.toString())
+        
+    def findEndpoints(self):
         self.my_ens_client = ensclient.ENSClient(self.identifier)
         if self.my_ens_client.init():
             self.session = self.my_ens_client.connect(self.network)
@@ -25,7 +39,7 @@ class CarClientENS(CarClient):
                 self.endpoint = ensclient.ENSEndpoint(self.session.binding["endpoint"])
                 print("host {0} port {1}".format(self.endpoint.host, self.endpoint.port))
             else:
-                print("failed to connect to ar-network")
+                print("failed to connect to car-network")
 
         else:
             print("failed to initialize")
@@ -34,7 +48,6 @@ class CarClientENS(CarClient):
     def close(self):
         if self.my_ens_client is not None:
             self.my_ens_client.close()
-
 
 
 if __name__ == "__main__":
